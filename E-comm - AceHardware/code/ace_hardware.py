@@ -1,13 +1,20 @@
-import requests, pandas as pd, time
+import requests, pandas as pd, time, platform
 from scrapy.http import HtmlResponse
+from sqlalchemy import create_engine
 
 class AceHardware:
 	def __init__(self):
 		# Global initialized variables
 		self.init_url = "https://www.acehardware.com/departments/outdoor-living/grills-and-smokers/gas-grills?pageSize=100&startIndex={}&_mz_partial=true&includeFacets=false"
-		self.init_headers = {
-			'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
-		}
+		if platform.system().lower() == 'windows':
+			self.init_headers = {
+				'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
+			}
+		elif platform.system().lower() == 'linux':
+			self.init_headers = {
+				'user-agent':"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0"
+			}
+
 		self.today = time.strftime("%Y-%m-%d")		
 		# Setting output file name
 		self.outfile_name = "acehardware_{}.csv".format(self.today)		
@@ -31,6 +38,17 @@ class AceHardware:
 	def get_xpath_obj(self, reqUrl, respText):
 		xresp = HtmlResponse(url=reqUrl, body=respText, encoding='utf-8')
 		return xresp
+
+
+	# Function "get_engine_obj":
+	# 	Builds connection to DB and creates an engine object
+	# Params:
+	# 	None
+	# return: 
+	# 	1. engine (DB connection) object
+	def get_engine_obj(self):
+		engine = create_engine('mysql+mysqldb://{user}:{pw}@{host}:3306/{db}?charset=utf8mb4'.format(user="your_username", pw="your_password", host="your_host_address", db="your_db_name"), echo = False)
+		return engine
 
 
 	# Function "clean_text":
@@ -103,7 +121,7 @@ class AceHardware:
 
 
 	# Function "create_output": 
-	# 	Pushing the collected product information list to output file
+	# 	Pushing the collected product information list to output file and DB
 	# Params: None
 	# return: None
 	def create_output(self):
@@ -114,7 +132,14 @@ class AceHardware:
 		# Create CSV output from DataFrame and save to the pre-defined path
 		print("\nCreating output file...")
 		out_df.to_csv(self.outfile_path, index=False)
-		print("=== Completed ===")
+		print("Output file created.")
+
+		# Push the DataFrame to DB
+		print("\nPushing Data to DB...")
+		data_df.to_sql("your_table_name", con=self.get_engine_obj(), index=False, if_exists='append', chunksize = 1000)
+		print("Data uploaded to DB.")	
+
+		print("\n=== Completed ===")
 
 
 if __name__ == "__main__":
