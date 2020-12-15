@@ -1,2 +1,2 @@
 # technical-assignments-webscraping
-Technical assignments from various company recruitment processes.
+Technical assignments related to webscraping from various company recruitment process tasks.
