@@ -1,0 +1,15 @@
+##### Scraper Assignment #####
+The aim of the assignment is to fetch the product details from the given website and export the results into a CSV file.
+To extract the data you can use the any Python library like Scrapy or Beautiful Soup or URLLib.
+The code should be clean & with proper comments.
+The deliverables are - 
+Following are the guidlines to fetch the product details from the given website. 
+1) Go to the website https://www.acehardware.com/
+2) Select category 'Grills and Smokers'
+3) Select 'Gas Grills' section
+https://www.acehardware.com/departments/outdoor-living/grills-and-smokers/gas-grills
+4) Pick up the details of all listed items. The datapoints to pick are Item Name, Item Category, Item Description, Item Price, Item Image
+5) Export the results as result.csv
+   The CSV file should have columns as item_id, item_name, item_category, item_description, item_price, item_image
+   
+attached some screenshots for reference.
